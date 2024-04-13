@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 import { useQuery } from "@tanstack/react-query";
 import { Autocomplete, TextField } from "@mui/material";
@@ -6,10 +5,16 @@ import { Option } from "./utils/types";
 import { reformatData } from "./utils/reformat-data";
 import { allowedSymbols } from "./constants";
 import { calculateResults } from "./utils/calculate-the-results";
+import { useSearchStore } from "./store/store";
 
 function App() {
   const endpoint = process.env.REACT_APP_ENDPOINT as string | "";
-  const [search, setSearch] = useState("");
+
+  const search = useSearchStore((state) => state.search);
+  const setSearch = useSearchStore((state) => state.setSearch);
+  const tags = useSearchStore((state) => state.tags);
+  const setTags = useSearchStore((state) => state.setTags);
+
   const { data } = useQuery({
     queryKey: ["suggestions"],
     queryFn: () => fetch(endpoint).then((res) => res.json()),
@@ -21,8 +26,6 @@ function App() {
           return JSON.stringify(elem);
         })
       : [];
-
-  const [tags, setTags] = useState<string[]>([]);
 
   return (
     <div className="App">
